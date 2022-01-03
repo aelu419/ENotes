@@ -1,3 +1,21 @@
+- [Characteristics of the C/C++ Language](#characteristics-of-the-cc-language)
+- [Programming as Solving a Problem](#programming-as-solving-a-problem)
+- [Syntax & Errors](#syntax--errors)
+- [1.1 Quiz Incorrect](#11-quiz-incorrect)
+- [1.2 Comments](#12-comments)
+  - [Single Line](#single-line)
+  - [Multi Line](#multi-line)
+  - [Proper Use](#proper-use)
+- [Objects and Variables](#objects-and-variables)
+  - [Definition](#definition)
+  - [Declaration](#declaration)
+  - [Basic IO](#basic-io)
+  - [Identifier & Function Naming](#identifier--function-naming)
+  - [Formatting](#formatting)
+  - [Operators](#operators)
+  - [Expressions](#expressions)
+  - [Writing a Program](#writing-a-program)
+
 # Characteristics of the C/C++ Language
 
 - Compiled
@@ -131,9 +149,117 @@
          // but narrow conversion is NOT permitted
          int width { 4.5 }; // --> throws error
          ```
-      - value initialization (see [code](./1_first.cpp))
+      - value initialization (see [code](./0+1_intro/main.cpp))
         - zero initialization: the special case of value initialization when it is defaulted to 0
       - **prefer direct brace when possible**
-  
+   - Note that some compilers may forbid the use of uninitialized variables. The following code could go around this issue.
+      ```c
+      void doNothing(int&) // Don't worry about what & is for now, we're just using it to trick the compiler into thinking variable x is used
+      {
+      }
+
+      //...
+      int x;
+      doNothing(x);
+      //...
+      ```
+   - **Undefined Behavior**
+     - performing an action such that the rules in C++ do not give clear, which may lead to
+       - crashes
+       - inconsistent behavior
+       - cross-platform errors
+     - *instance of* correct performance does *not* guarantee the program to be free of undefined behavior
 ## Basic IO
 - Insertion operator ```<<```
+- Prefer ```\n``` over ```std::endl``` because ```endl``` performs an output flush that is not necessary in the context of ```cout```
+- Extraction operator ```>>```
+  - for erroneous input (*ex.* "1.2", "a" for int), cin defaults to 0
+- ### Whitespace
+  - no new line inside quotes
+  - quotes separated by whitespace will be concatenated by compiler
+  - 
+
+## Identifier & Function Naming
+- start with lower case letter
+- intercap (camel case) or snake_case
+  - match the casing of the codebase
+- system/library/compiler variables usually start with ```_```\
+<br>
+- descriptiveness of an identifier correlate with frequency/broadness of use
+  - *ex.* ```int i```
+  - *ex.* ```T player```
+  - *ex. good* ```int secondsElapsed```
+    - *ex. bad* ```int time```
+- when description is too length, add comment instead
+
+## Formatting
+- lines shoule be 80 characters maximum
+- Bracket styles
+  - 1TBS
+      ```c
+      if {
+         // ...
+      } else {
+         // ...
+      }
+      ```
+  - K&R
+      ```c
+      if
+      {
+         // ...
+      }
+      else
+      {
+         // ...
+      }
+      ```
+  - Stroustrup
+      ```c
+      if {
+         // ...
+      }
+      else { // else on the new line
+         // ...
+      }
+      ```
+- split line expressions
+   - operator on the new line
+      ```c
+      int a = b
+         + c
+         * d;
+      ```
+   - align variables with white space
+      ```c
+      int a    = 8;
+      int time = 10;
+      ```
+   - line between previous block and this comment
+      ```c
+      // comment 1
+      int a;
+
+      // comment 2
+      int b;
+      ```
+   - automatic formatting: ```Alt+Shift+F```
+
+## Operators
+- *nomen.* *operator+* denotes the ```+``` operator, and so on with other symbols
+  - unary
+  - binary
+  - ternary
+
+## Expressions
+- a combination of literals, operators, and function calls that evaluate to a *single* value
+- expressions are not compilable in some cases
+  - *ex. bad*: ```1+2;``` $\to$ ```warning: expression result unused [-Wunused-value]```
+- but in others they are allowed as *expression statements*
+  - the result of such statements are discarded upon evaluation
+- *expression statements* can also occur in cases like ```a = 5;``` where the statement is made entirely of expression, but the expression *performs an action*.
+
+## Writing a Program
+1. Create a working solution
+2. Clean up and add explanation, make code robust by adding throw-catch
+3. Maintain over time.
