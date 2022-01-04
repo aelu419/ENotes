@@ -1,18 +1,7 @@
+#include "io.h"
 #include <iostream>
 
-int add(int, int);
-
-int readNumber()
-{
-    int input;
-    std::cin >> input;
-    return input;
-}
-
-void writeAnswer(int answer)
-{
-    std::cout << "The answer is: " << answer << std::endl;
-}
+// this is the second version of quiz 2.x, using header files instead of single
 
 int main()
 {

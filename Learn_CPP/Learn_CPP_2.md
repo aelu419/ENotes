@@ -8,6 +8,12 @@
   - [Standard Namespace (std)](#standard-namespace-std)
 - [Preprocessor](#preprocessor)
 - [Header Files](#header-files)
+  - [Includes Order](#includes-order)
+  - [Header File Practices](#header-file-practices)
+  - [Header Guards](#header-guards)
+- [Program Design](#program-design)
+  - [Implementation Steps](#implementation-steps)
+  - [Programming Practices](#programming-practices)
 
 # Functions
 - *def.* sequence of reusable statements written to perform one job
@@ -119,6 +125,8 @@
   - it scans through the file for preprocessor directives and perform the tasks they specify
     - ```using namespace``` directives are not *preprocessor* directives
   - ```#include <file>``` replaces the line with text from ```file```, it is used almost exclusively to include header files, but that is not the only use
+    - using ```<>``` tells the preprocessor to look in the environment includes directory
+    - using ```""``` tells the preprocessor to look in the current directory
   - ```#define identifier substitution``` replaces all instances of ```identifier``` in non-directive code with ```substitution```
     - usually, ```identifier``` is named in capitalized snake case, such as ```MY_NAME```
   - *def.* **object-like directives**: directives for literals used as constants (i.e. without parameter lists)
@@ -132,3 +140,94 @@
   - directives are *per file*, since they run as intermediate step of translation, which is a per file process
 
 # Header Files
+- one-to-one ```.h``` with ```.cpp``` files, including all necessary declarations for using the ```.cpp``` file
+  - the paired ```.cpp``` should ```#include``` the ```.h```
+- *ex.*
+  - ```main.cpp```
+    ```c
+    #include <iostream>
+    #include "foo.h" // double quotes instead of bracket
+
+    int main() { return 0; }
+    ```
+  - ```foo.h```
+    ```c
+    int foo(int, int);
+    ```
+  - ```foo.cpp```
+    ```c
+    #include "foo.h"
+
+    int foo(int bar) { return 0; }
+    ```
+- it is common to have all the header files in some folder, and tell the compiler to search in that folder
+    ```zsh
+    g++ -o main -I/source/includes main.cpp
+    ```
+- *def.* **transitive includes** header files can include other header files
+  - do not rely on transitive includes as the middle layers could change
+
+## Includes Order
+1. paired header file for the current ```.cpp```
+2. headers from project
+3. 3rd party libs
+4. stdlib
+
+This order is to prevent missed inclusions in respective items from passing the compiler. For example, if the paired header file *should* include stdlib, but doesn't, putting it behind stdlib will make it pass the compiler.
+
+Within each term, inclusion should be done by alphabet.
+
+## Header File Practices
+- pair up names with ```.cpp```
+- avoid entanglement with other header files and non-paired ```.cpp``` you wrote (other libraries are fine)
+- every header should compile on its own
+- do not include ```.cpp``` files
+- only include necessary files
+- only define global variables
+- always use header guards
+
+## Header Guards
+- prevent duplicate definitions
+- *ex.*
+```c
+#ifndef UNIQUE_NAME
+#define UNIQUE_NAME
+
+// header file content
+
+#endif
+```
+- by convention, ```UNIQUE_NAME``` is the full file name in capital snake case
+  - ```foo.h``` $\to$ ```FOO_H```
+- in more professional settings, one may use ```<PROJECT>_<PATH>_<FILE>_H , <FILE>_<LARGE RANDOM NUMBER>_H``` instead to avoid collision
+- header guards do not prevent one-time inclusions per file across separate files
+  - at link time, errors occur if the duplicated header file contains any *definition*
+  - this is why it is good to only include *declarations*
+    - however, some *type definitions* are conventionally put in header files
+- some modern compilers support guards like ```#pragma once``` that eliminate identical occurrences
+
+# Program Design
+1. Define goal in one/two sentences
+2. Define other requirements
+3. Define technical requirements
+   1. OS/platforms
+   2. tools/libraries
+   3. test/feedback/release strategy
+   4. back up/version control/CICD planning
+4. Break complex task into subtasks (*top-down* approach)
+5. Construct hierarchies from elementary tasks (*bottom-up* approach)
+6. Put things in order to construct business logic
+
+## Implementation Steps
+1. Put outline in main and add function stubs
+2. Implement functions
+   1. Declare function prototype
+   2. Write function
+   3. Test function
+3. Final testing
+
+## Programming Practices
+1. Start simple
+2. Add features iteratively
+3. Focus on one area at a time
+4. Polish iteratively
