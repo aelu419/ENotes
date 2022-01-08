@@ -1,5 +1,15 @@
 - [Syntax and Semantic Errors](#syntax-and-semantic-errors)
 - [Strategy for Debugging](#strategy-for-debugging)
+- [Integrated Debugger Commands](#integrated-debugger-commands)
+  - [Step In](#step-in)
+  - [Step Over](#step-over)
+  - [Step Out](#step-out)
+  - [Step Back](#step-back)
+  - [Flow Change](#flow-change)
+  - [Variable Tracking](#variable-tracking)
+  - [Call Stack](#call-stack)
+- [Defensive Programming](#defensive-programming)
+- [Other Coding Practices](#other-coding-practices)
 # Syntax and Semantic Errors
 - *def.* **syntax error**: compile time error violating the language's grammar rules
 - *def.* **semanti error**: runtime error violating the programmer's intent
@@ -36,4 +46,36 @@
     * *ex.* ```plog``` library
     * prevents the program from clutteriing the terminal output
   3. use integrated debugger
-    * 
+
+# Integrated Debugger Commands
+## Step In
+- pause to examine after executing the next line in normal program flow
+
+## Step Over
+- pause to examine after evaluating the next statement (skipping all called functions unless other breakpoints are specified inside them)
+
+## Step Out
+- finishes all code in *the current function* and then pause
+
+## Step Back
+- available in a few debuggers, rewinds to the last step (what exactly counts a step varies by debuggers since it is not yet a standardized feature, due to the complexity of implementation)
+
+## Flow Change
+- Jumping, Continue, Starting, etc.
+
+## Variable Tracking
+- different tracking window options for global, local, etc.
+
+## Call Stack
+- trace method calls
+
+# Defensive Programming
+- anticipate misuse when coding by
+  - end users
+  - fellow developers
+
+# Other Coding Practices
+- unit testing
+- constraints (assert)
+- using *static analysis tools* (linters)
+  - most C++ compilers already act as such

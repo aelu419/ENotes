@@ -18,7 +18,10 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": ["$gcc"],
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": "absolute"
+      },
       "group": {
         "kind": "build",
         "isDefault": true

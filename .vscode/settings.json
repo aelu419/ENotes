@@ -71,5 +71,6 @@
     "code-runner.runInTerminal": true,
     "editor.rulers": [
         80
-    ]
+    ],
+    "C_Cpp.autocompleteAddParentheses": true
 }
