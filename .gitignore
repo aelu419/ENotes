@@ -2,6 +2,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,c++
 
+### Ignore binaries without extention
+*
+!*/
+!*.*
+
 ### C++ ###
 # Prerequisites
 *.d
@@ -56,3 +61,6 @@
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++
+
+### Exclude Mac debug builds
+*.dSYM
