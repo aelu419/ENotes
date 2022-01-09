@@ -17,6 +17,7 @@
   - [Symbolic Constants (Constant Variables)](#symbolic-constants-constant-variables)
   - [Constexpr](#constexpr)
   - [Object Macros as Constants](#object-macros-as-constants)
+- [Chapter 4 End Quiz Incorrect](#chapter-4-end-quiz-incorrect)
 
 # Intro
 - the book defines a byte to be the smallest addressable unit of bits, which makes it different per implementation
@@ -188,3 +189,5 @@
     // after preprocessing
     type_t literal_a = literal_b;
     ```
+# Chapter 4 End Quiz Incorrect
+- for single characters, use ```''``` isntead of ```""``` to optimize
