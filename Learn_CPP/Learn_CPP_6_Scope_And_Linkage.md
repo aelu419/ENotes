@@ -11,6 +11,14 @@
 - [Global Constants Across Files](#global-constants-across-files)
   - [Pre C++17](#pre-c17)
   - [Post C++17](#post-c17)
+- [Static Local Variables](#static-local-variables)
+- [Short Summary](#short-summary)
+- [Using](#using)
+  - [Using Declaration](#using-declaration)
+  - [Using Directive](#using-directive)
+  - [Cautions](#cautions)
+- [Unnamed Namespace](#unnamed-namespace)
+- [Inline Namespace](#inline-namespace)
 
 # Blocks
 - *alias* compound statement, block statement
@@ -162,6 +170,133 @@ active::bar();
 
 # Global Constants Across Files
 ## Pre C++17
+- file << header << namespace << constant declaration (``constexpr``)
+- *issue.* since constant variables have internal linkage, duplicate headers lead to duplicate declarations
+  - this means that changing one value will lead to mandatory re-compilation of all files referencing it
+  - this is because compilers often optimize ``constexpr`` to literals
+- *fix.* use ``const`` instead of ``constexpr`` so that it could be forwarded as external
+  - *constants.cpp*
+    ```c
+    #include <constants.h>
+    namespace constants {
+      extern const type_t foo { bar }; // actual declaration
+    }
+    ```
+  - *constants.h*
+    ```c
+    #ifndef CONSTANTS_H
+    #define CONSTANTS_H
 
+    namespace constants {
+      extern const type_t foo; // forward declaration
+    }
+
+    #endif
+    ```
+  - *main.cpp*
+    ```c
+    #include <constants.h>
+
+    int main() { ... }
+    ```
+- *naming*: since the above global constants already exist in namespaces, using the ``g_`` prefix is not necessary
+- when constant value changed, only ``constant.cpp`` needs recompilation
+  - however, less optimization could be done because ``const`` is less restrictive than ``constexpr`` in its properties
+  - these variables are treated as run-time constants outside ``constants.cpp``, and compile-time constants within the file
+  - for this reason, it is actually not preferred to use ``extern const``
 ## Post C++17
+- *def.* **inline**: allowed multiple definitions per file
+  - external linkage by default
+  - ``constexpr`` qualities are retained
+  - all declarations must be identical for them to be collapsed
+- *ex.*
+  ```c
+  #ifndef CONSTANTS_H
+  #define CONSTANTS_H
 
+  namespace constants {
+    inline constexpr double g = 9.81;
+  }
+
+  #endif
+  ```
+- the method retains the downside of mandatory re-compiling of all references to the header
+  - essentially the improvement from the old ``extern constexpr`` is the memory save from reduced copies
+
+# Static Local Variables
+- the ``static`` keyword has multiple meanings under different contexts
+- *naming.* use ``s_`` prefix on static local variables, similar to ``g_`` for global ones
+  - use static variables to reduce repeated initializations of the same thing
+
+# Short Summary
+![](../res/Learn_CPP/6.11.1.png)
+![](../res/Learn_CPP/6.11.2.png)
+![](../res/Learn_CPP/6.11.3.png)
+
+# Using
+- *def.* **qualified nanme** a name prefixed by ``<namespace>::``
+  - skipping ``<namespace>`` means the name is qualified by global 
+    - *ex.* ``::foo`` alone, with nothing before the scope resolution operator
+  - *def.* **unqualified name** has no resolution operator nor scope
+
+## Using Declaration
+- the ``using <namespace::name>`` declaration tells the compiler to recognize unqualified ``name``s as ``namespace::name``
+- *ex.*
+  ```c
+  using std::cout;
+  cout << "this outputs" << std::endl; // here, endl is not using-declared yet, so std:: still needs to be added
+  ```
+  - using using declarations is generally considered safe *within* a function
+
+## Using Directive
+- ``using namespace <namespace>``
+- imports all names within the namspace into the scope
+- using directives should generally be avoided in order to prevent current and future collisions
+- another possible error is using subsequent namespaces that intersect
+  - *ex.*
+    ```c
+    namespace a {
+      int foo {};
+    }
+    namespace b {
+      int foo {};
+    }
+
+    int main() {
+      using namespace a;
+      using namespace b;
+      // collision of foo
+    }
+    ```
+
+## Cautions
+- ``using`` statements (both directives and declarations) cannot be voided within scope (you cannot un-use a namespace/qualification)
+- for this reason, either avoid using it or limit its scope
+
+# Unnamed Namespace
+- *ex.*
+  ```c
+  namspace {
+    void foo() { ... }
+  }
+  ```
+- all names within an unnamed (anonymous) namespace are considered to be within the parent namespace, but have internal linkage
+
+# Inline Namespace
+- typically used to version content
+- members of an inline namespace are treated as though they belong to its enclosing scope, while retaining the ability to be qualified through the namespace
+  - *ex.*
+    ```c
+    inline namespace v1 {
+      void foo() {}
+    }
+    namespace v2 {
+      void foo() {}
+    }
+
+    int main() {
+      v1::foo();
+      v2::foo();
+      foo(); // addresses to v1 by default
+    }
+    ```
