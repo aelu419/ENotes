@@ -2,6 +2,23 @@
 - [Switch](#switch)
   - [Fallthrough & Scoping](#fallthrough--scoping)
 - [Goto](#goto)
+- [Loops](#loops)
+  - [While](#while)
+  - [For](#for)
+- [Exits](#exits)
+  - [Break](#break)
+  - [Continue](#continue)
+  - [Standard Exit](#standard-exit)
+- [Intro to Testing](#intro-to-testing)
+  - [Informal Testing](#informal-testing)
+  - [Preserving Tests](#preserving-tests)
+  - [Automating Tests](#automating-tests)
+  - [Integration Testing](#integration-testing)
+  - [Code Coverage](#code-coverage)
+- [Common Semantic Errors](#common-semantic-errors)
+- [Detecting and Handling Errors](#detecting-and-handling-errors)
+  - [Handling Errors](#handling-errors)
+  - [Standard Input Invalid](#standard-input-invalid)
 
 # If-Else
 - a good practice is to put brackets around single statements
@@ -83,4 +100,131 @@
         ```
 
 # Goto
+- unconditional jump
+- *ex.*
+    ```c
+    statementLabel:
+        foo();
+        bar();
+        goto statementLabel;
+    ```
+- cannot jump outside function
+- cannot jump forward/backwards over initialization
+- goto should be avoided due to its promotion of sphagetti code (unclear execution path)
 
+# Loops
+## While
+```c
+while(condition)
+    statement;
+```
+- for intentional infinite loops, use ``while(true)``
+- loop variables should always be signed
+```c
+do
+    statement;
+while(condition);
+```
+- ``do-while``s are less commonly used due to their unclear nature
+  - it is clearer to have the loop condition at the top
+
+## For
+```c
+for (init; cond; update)
+    statement;
+```
+- ``for`` loops can also produce infinite loops
+```c
+for (;;)
+    statement;
+```
+- multiple variables
+  - *ex.*
+      ```c
+      for(int x{}, y{}; x < 10 && y < 10; x++, y--)
+          ;
+      ```
+
+# Exits
+## Break
+- exit the entire loop
+## Continue
+- exit the current iteration and start the next (after evaluating conditions)
+
+- a good practice is to use ``break`` and ``continue`` only if they add more clarity to the code
+  - use the same for early ``return``s (i.e. ``return`` statements that aren't the last one in the function)
+
+## Standard Exit
+- ``std::atexit(*void())`` sets the function to call at program exit
+  - *ex.* runs ``foo`` after ``a``, and exits the program immediately
+    ```c
+    foo() {
+        // clean up code
+    }
+    
+    int main() {
+        std::atexit(foo);
+        //...a
+        if(cond)
+            std::exit();
+        //...b
+        return;
+    }
+    ```
+- it is possible to register multiple clean up programs, they will be called by the reverse order by which they are registered
+- clean up functions are necessary because ``std::exit()`` skips over necessary program clean up
+- ``std::abort()`` terminates the program abnormally
+- ``std::terminate()`` is called implicitely upon exception not handled
+  - it calls ``std::abort()`` within
+- for best practice, avoid using these
+
+# Intro to Testing
+- *def.* **scope creep**: adding features not originally planned for
+- write modularly and minimally, test early and often
+
+## Informal Testing
+- write tests that are not formally defined (as unit tests, or have assertions)
+  - *ex.* call ``foo`` in ``main`` and print some outputs, see if those outputs are right
+
+## Preserving Tests
+- move informal testing code to a separate function
+
+## Automating Tests
+- make the testing function decide whether the outputs are correct or not, instead of manually examining
+- **unit testing frameworks** are usually used for this purpose
+
+## Integration Testing
+- test the coordination of many different features
+
+## Code Coverage
+- *def.* descriptions of the portion of the program that is exercised in the testing process
+    1. **statement coverage**: percent of statements ran
+    2. **branch coverage**: percent of branches encountered
+    3. **loop coverage**: aka the 012 test: every loop should be ran under 0, 1, and 2 iterations. if those work, then the loop is unlikely to have further issues
+- cover different inputs by using **equivalent categories**
+
+# Common Semantic Errors
+1. conditional logic error (``>=`` vs. ``>``)
+2. unintentional infinite loops
+3. off-by-one (in loops, the end condition)
+4. operator precedence
+5. floating point precision issues
+6. integer vs. floating point division
+7. accidental null
+8. incorrect scoping
+  
+# Detecting and Handling Errors
+- in defensive programming, it is good practice to anticipate the errors and handle them gracefully
+  - i.e. testing the **sad paths** of the program, instead of just the **happy path**
+## Handling Errors
+1. handle within the function
+   * prompt again, or cancel the operation (and print)
+2. pass error back to caller
+   * *ex.* changing a ``void`` function to a ``bool``, with the return value denoting method exit state
+3. fatal errors
+   * preemptively exit the program, using halting statments such as ``std::exit(n)``
+4. exceptions
+   * see ``throw``-``catch`` later on
+   * mainly for passing the error back to the caller
+## Standard Input Invalid
+- 
