@@ -19,6 +19,8 @@
 - [Detecting and Handling Errors](#detecting-and-handling-errors)
   - [Handling Errors](#handling-errors)
   - [Standard Input Invalid](#standard-input-invalid)
+  - [Input Validation](#input-validation)
+- [Assertion](#assertion)
 
 # If-Else
 - a good practice is to put brackets around single statements
@@ -227,4 +229,47 @@ for (;;)
    * see ``throw``-``catch`` later on
    * mainly for passing the error back to the caller
 ## Standard Input Invalid
+- slightly more detailed explanation for the extraction operator ``>>``
+  - *def.* **buffer**: piece of memory for temporarily storing data
+  - if there is already data in the buffer, ``std::cin`` extracts from it
+  - other wise,
+    - user prompted to input, stops upon ``ENTER``
+    - extracts as much data as necessary
+    - the rest is left over
+## Input Validation
+- types of validation
+  - **inline**: validate *as* input
+  - validate the string before type conversion
+  - let ``std::cin`` handle the conversion, and handle the error
+- common input issues
+  - meaningless input passing extraction
+  - additional inputs after a valid input
+    - ``std::cin.ignore(n, '\n')`` ignores the first n characters or until a `\n` is reached
+    - alternatively, use ``std::numeric_limits<std::streamsize>::max()`` which returns the largest number that a stream size can hold
+      - use ``#include <limits>``
+  - extraction fails
+    ```c
+    if (std::cin.fail()) {
+      // handle extraction failure
+      std::cin.clear();
+      ignoreLine(); // calls std::cin.ignore with streamsize max
+    }
+    ```
+  - semantically makes sense, but overflows after extraction suceeds
+    - in this case, ``std::cin`` goes into failure, but also clamps the input into range
+  
+# Assertion
+- *def.* **precondition**: conditions that must be true before some code
+- *def.* **invariant**: conditions that must be true *while* that code is executing
+- *def.* **postcondition**: conditions that must be true after some code
+- ``assert`` is a preprocessor macro residing in ``<cassert>``
+  - *ex.* ``assert(a > b)``
+  - *ex.* ``assert(a > b && "there is more of a than b")``
+    - note that the string literal evaluates to ``true``, so this effectively adds a comment inside the code
+- assertions are used for logically impossible events, while exceptions are used for more common errors
+- assertions are sometimes used to indicate needing implementation
+- use ``NDEBUG`` to compile without assertions and improve performance slightly
+  - this is usually for shipped versions of the program
+- ``static_assert(cond, msg)`` is evaluated by the compiler instead, and can check variables in the environment
+  - *ex.* ``static_assert(sizeof(int)==2, "Size of int too large")``
 - 
