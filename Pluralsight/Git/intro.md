@@ -1,3 +1,5 @@
+# $\textrm{How Git Works - Paolo Perrotta}$
+- [$\textrm{How Git Works - Paolo Perrotta}$](#textrmhow-git-works---paolo-perrotta)
 - [Introduction to Git](#introduction-to-git)
   - [Hashing](#hashing)
   - [Commit](#commit)
@@ -14,7 +16,9 @@
   - [Merges vs. Rebases](#merges-vs-rebases)
   - [Elaboration of Tags](#elaboration-of-tags)
 - [Distributed Version Control](#distributed-version-control)
-  - [Local vs. Remote](#local-vs-remote)
+  - [Pushing to Remote](#pushing-to-remote)
+  - [Pulling from Remote](#pulling-from-remote)
+- [Github](#github)
 
 # Introduction to Git
 ## Hashing
@@ -155,7 +159,7 @@
 - ``git`` does not care about which version is more priviledged, a local copy is the same value with a cloud copy
   - all values are by convention, not design
 
-## Local vs. Remote
+## Pushing to Remote
 - configuration in ``.git/config``
 - the default remote is ``origin``, containing a ``url`` and a ``fetch`` describing which commit to fetch from
 - ``git branch --all`` tracks remote branches
@@ -163,4 +167,21 @@
   - will automatically update upon connection to the remote
   - tracked in ``./git/packed_refs`` blob
 - ``git show-ref <branch>`` shows the commits that each branch points to
-- 
+- ``git push`` updates the remote to fit the content that the current active branch is pointing towards, uploading necessary blobs
+- force push ``-f`` rewrites the history on the remote
+
+## Pulling from Remote
+- ``git fetch`` gets the commit history from the remote and creates another branch based on it
+  - ``git merge`` with that fetched history re-combines everything to main
+- the above actions are abbreviated into ``git pull``
+- why ``merge`` instead of ``rebase``?
+  - ``rebase`` creates a content-clone of the remote commit, attaching it to after ``main``
+  - this means that after pushing the rebased version, others cannot reference their commit old hashes
+  - then, pulling again will re-download the remote commit as a separate branch, co-existing with the current rebased branch
+  - conclusion: *do not rebase shared commits!*
+
+# Github
+- ``fork``: "remote clone", create another origin that belongs to the current user
+  - the original origin becomes, conventionally, ``upstream``
+  - note that it is impossible to push to ``upstream``
+  - instead: do ``pull request`` to notify ``upstream``'s owner
