@@ -1,7 +1,6 @@
 - [Bitset Member Functions](#bitset-member-functions)
 - [Bitwise Operators](#bitwise-operators)
 - [Bit Masks](#bit-masks)
-- [Binary/Decimal Conversion](#binarydecimal-conversion)
 
 # Bitset Member Functions
 - *def.* **flag**: a value that holds a signal purely for some *other* function or process
@@ -64,4 +63,3 @@
     ... GREEN { 0x0000FF00 };
     ... ALPHA { 0x000000FF };
     ```
-# Binary/Decimal Conversion

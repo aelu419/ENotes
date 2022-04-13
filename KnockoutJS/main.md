@@ -49,3 +49,4 @@
   - ``observable(val)`` sets the observable to val while also returning the field
 
 # Lists and Collections
+continued under Pluralsight/Knockout
