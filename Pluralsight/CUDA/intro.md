@@ -224,6 +224,7 @@
   - for each iteration, $T \leftarrow T / 2$, sum every $2^i$'th value in the buffer
   - *ex.*
     ```c
+    // with one single TB handling the entire thread count
     __global__ void sumSingleBlock(int *d) {
       int tid = threadIdx.x;
 
@@ -240,4 +241,30 @@
   - after $\lceil\log(N)\rceil$ iterations, the first item in the buffer is the sum of the entire buffer
 
 ## Scan
-- 
+- $N-1$ threads (at first iteration)
+- per iteration, step size doubles, number of threads -= step size
+  - step size: 1, 2, 4, 8, ...
+  - number of threads: 4, 3, 1 if starting at 4
+  - from ``i``, ``arr[i]`` $\leftarrow$ ``f(arr[i - step_size], arr[i])``
+  - terminate upon $T < 1$, that is, the only operation on the last iteration is ``arr[N-1]`` $\leftarrow$ ``f(arr[0], arr[N-1])``
+- upon completion, ``arr[i]`` = ``f(arr[0], ..., arr[i])``
+  - ex. let $f = +$, ``arr = {1, 2, 3, 4, 5}``, ``scan(arr, f) = {1, 3, 6, 10, 15}``
+- another way to view it is that the result ``r[i]`` broadens its perspective to the left (decrement) direction per step
+  - at iteration 0, ``r[N-1]`` "looks at" itself and the element 1 to the left
+  - at iteration 1, itself and 2 to the left
+  - ...
+- ```c
+  // with 1 TB handling the entire thread count
+  __global__ void runningSum(int* d) {
+
+    int threads = blockDim.x;
+    int tid = threadIdx.x;
+    for (int tc = threads; tc > 0;) {
+      if (tid < tc) {
+        d[tid+step] += d[tid];
+      }
+      tc -= step;
+    }
+
+  }
+  ```
