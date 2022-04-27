@@ -34,13 +34,13 @@
   - at runtime, they are sometimes doing static casting, sometimes const casting, and sometimes reinterpret casting
 
 # Type Alias
-- ```c
+- ```c++
   using <alias> = <type>
   ```
 - aliases are not *type safe* as the compiler does not check for implicit conversions
   - as long as underlying type passes, implicit conversions are always considered legal
 - semantically equivalent with ``typedef``
-  - ```c
+  - ```c++
     typedef <type> <alias>
     ```
   - not encouraged due to confusion (which of type/alias comes first?)
@@ -51,11 +51,11 @@
 # Type Deduction
 ## For Variables
 - ``auto``: let compiler figure out type based on the value assigned
-  - ```c
+  - ```c++
     auto c{5.0}; // double
     ```
 - type deduction usually drops the ``const``
-  - ```c
+  - ```c++
     const int y{1};
     auto x{y}; // int, not const int
     ```
@@ -63,13 +63,13 @@
 - *case.* strings
   - by default, ``auto`` deduces ``string``s to ``char*``
   - if need to be string, suffix the literal with ``s`` (``std::string``) or ``sv`` (``std::string_view``)
-    - ```c
+    - ```c++
       auto s { "foo"s };
       ```
 - type deduction may obscure arithmetics, but for objects they are generally agreed to be safe
 
 ## For Functions
-- ```c
+- ```c++
   auto foo(int bar) {
     return bar + 1; // deduces to be an int
   }
@@ -77,7 +77,7 @@
 - cannot be used in function declarations
   - for this reason, avoid ``auto`` functions
 - ``auto`` as mark for upcoming trailing return type
-- ```c
+- ```c++
   auto foo(int bar) -> int {
     return bar + 1;
   }
@@ -92,7 +92,7 @@
 - function overloading is done on the compiler via *name mangling*
   - namely, the original generated name based on the identifier is mangled according to the function signature, thereby keeping each overloaded version unique
   - *ex.*
-  ```c
+  ```c++
   int fcn(); // --> __fcn_v
   int fcn(int); // --> __fcn_i
   ```
@@ -116,18 +116,18 @@
     - the chosen overload must be *at least as good* a match on all parameters, with one parameter *better* than all other overloads
   
 # Default Arguments
-- ```c
+- ```c++
   int foo(int bar = 3, bab = 4);
   ```
   - can only be rightmost parameter
-    ```c
+    ```c++
     foo(3); // bar = 3, bab = 4
     foo(,3); // attempt to bar = 3, bab = 3, but not actually legal
     ```
 - the default value can only be written in *either* the declaration *or* the definition, but not both
   - the agreed-upon practice is to write in declaration
 - note that overloaded functions with default parameters may lead to ambiguity
-```c
+```c++
 int foo(int bar);
 int foo(int bar, int bab = 0);
 
@@ -161,7 +161,7 @@ foo(0); // ambiguous
       - the result of which is a **function instance**
       - if used via function call, the instantiation is **implicit**
   - template function instances can be used in coordinance with regular functions
-    - ```c
+    - ```c++
       // continue from ex.1
       int max(int x, int y) {
         // impl.
@@ -175,14 +175,14 @@ foo(0); // ambiguous
       max<>(0, 0.5); // this results in ambiguous typing
       ```
   - template functions can have non-template parameters
-    - ```c
+    - ```c++
       template <typename T>
       T foo(T x, int y);
       ```
   - ! note that instantiated functions may not compile
   - ``auto`` for function templates
     - for multiply-typed function parameters, the return value may be ambiguous
-    - ```c
+    - ```c++
       template <typename T, typename U>
       T add(T x, U y) { return x + y; }
       
@@ -193,7 +193,7 @@ foo(0); // ambiguous
 
       ```
       - for ``C++20``, if each parameter could be a *unique* type, then the template definition can be abbreviated with ``auto``
-      - ```c
+      - ```c++
         auto ternary(auto x, auto y, auto z) {
           // ...
         }
@@ -206,7 +206,7 @@ foo(0); // ambiguous
   - note that ``static`` variables are not shared between different template function instances, and that there can only be one instance for any unique set of template type names
     - ``max<int>`` calls will share one static variable, while ``max<double>`` calls share another
   - writing functions based on template declarations
-    - ```c
+    - ```c++
       // continue from ex.2
       template<> // 
       ```

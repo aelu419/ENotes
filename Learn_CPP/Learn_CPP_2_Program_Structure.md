@@ -30,7 +30,7 @@
 - as with C, in C++, arguments are passed *by value*, which means they are copied
   - however, there is no guarantee for the order by which these values are evaluated
     - *ex.*
-        ```c
+        ```c++
         std::cout << sum(a(), b());
         ```
     - in this example, either ```a()``` or ```b()``` could be called first
@@ -56,7 +56,7 @@
 - *def.* **declaration**: telling the compiler that an entity exists
 - to avoid issues of keeping ```main``` at top, use **forward declaration**
   - *ex.*
-      ```c
+      ```c++
       int foo(int bar); // this is a FUNCTION PROTOTYPE for foo
       int main() {
           // call foo
@@ -67,7 +67,7 @@
       ```
     - note that function prototypes are *statements*
   - *ex.2* it is possible (although not recommended) to skip para meter naming in prototypes
-    ```c
+    ```c++
     int foo(int);
     ```
 - a function protytpe without a defined function body will compile *unless it is actually called*
@@ -89,7 +89,7 @@
   - this is done by using function prototypes
   - *ex.*
     - ```main.cpp```
-        ```c
+        ```c++
         #include <iostream>
         int add(int, int);
         int main() { 
@@ -97,7 +97,7 @@
         }
         ```
     - ```add.cpp```
-        ```c
+        ```c++
         int add(int x, int y) {
             // definition
         }
@@ -144,18 +144,18 @@
   - the paired ```.cpp``` should ```#include``` the ```.h```
 - *ex.*
   - ```main.cpp```
-    ```c
+    ```c++
     #include <iostream>
     #include "foo.h" // double quotes instead of bracket
 
     int main() { return 0; }
     ```
   - ```foo.h```
-    ```c
+    ```c++
     int foo(int, int);
     ```
   - ```foo.cpp```
-    ```c
+    ```c++
     #include "foo.h"
 
     int foo(int bar) { return 0; }
@@ -189,7 +189,7 @@ Within each term, inclusion should be done by alphabet.
 ## Header Guards
 - prevent duplicate definitions
 - *ex.*
-```c
+```c++
 #ifndef UNIQUE_NAME
 #define UNIQUE_NAME
 

@@ -19,12 +19,13 @@
   - [Cautions](#cautions)
 - [Unnamed Namespace](#unnamed-namespace)
 - [Inline Namespace](#inline-namespace)
+- [Constexpr and Consteval](#constexpr-and-consteval)
 
 # Blocks
 - *alias* compound statement, block statement
 - *def.*: zero or more statements treated by the compiler as one single statement
 - ```{ statements }```
-- ```c
+- ```c++
   //outer block
   {
       // inner block / nested block
@@ -40,7 +41,7 @@
 
 # Namespace
 ## Namespace Definition
-```c
+```c++
 namespace foo {
     // define variables and member functions here
 }
@@ -52,7 +53,7 @@ namespace foo {
   - define namespaces in header files
 - Nested namespaces
   - *ex.1* nested definition
-    ```c
+    ```c++
     namespace foo {
         namespace goo {
             // ...
@@ -60,7 +61,7 @@ namespace foo {
     }
     ```
   - *ex.2* "direct" definition (C++17)
-    ```c
+    ```c++
     namespace foo::goo {
         //...
     }
@@ -70,7 +71,7 @@ namespace foo {
     - *ex. C++* ```std```
     - *ex. C#* ``UnityEngine.Experimental.Rendering. ...`` 
 ## Namespace Alias
-```c
+```c++
 namespace active = foo::goo;
 active::bar();
 ```
@@ -98,7 +99,7 @@ active::bar();
 # Variable Shadowing
 - *alias.* name-hiding, shadowing
 - there is no limit for shadowing between nested blocks
-  ```c
+  ```c++
   int foo;
   if (bar) {
     int foo; // this shadows the outer foo
@@ -121,12 +122,12 @@ active::bar();
   - in this context, ``extern`` just denotes the statement being a forward declaration, instead of being a storage class
   - *ex.*
     - in ``a.cpp``
-      ```c
+      ```c++
       int g_x {2};
       extern const int g_y {3};
       ```
     - in ``main.cpp``
-      ```c
+      ```c++
       extern int g_x;
       extern const int g_y;
 
@@ -158,7 +159,7 @@ active::bar();
 2. encapsulate using accessor/modifier functions
    * this way there is no need for ``extern``
    * *ex.*
-      ```c
+      ```c++
       namespace constants {
         const int size;
       }
@@ -176,14 +177,14 @@ active::bar();
   - this is because compilers often optimize ``constexpr`` to literals
 - *fix.* use ``const`` instead of ``constexpr`` so that it could be forwarded as external
   - *constants.cpp*
-    ```c
+    ```c++
     #include <constants.h>
     namespace constants {
       extern const type_t foo { bar }; // actual declaration
     }
     ```
   - *constants.h*
-    ```c
+    ```c++
     #ifndef CONSTANTS_H
     #define CONSTANTS_H
 
@@ -194,7 +195,7 @@ active::bar();
     #endif
     ```
   - *main.cpp*
-    ```c
+    ```c++
     #include <constants.h>
 
     int main() { ... }
@@ -210,7 +211,7 @@ active::bar();
   - ``constexpr`` qualities are retained
   - all declarations must be identical for them to be collapsed
 - *ex.*
-  ```c
+  ```c++
   #ifndef CONSTANTS_H
   #define CONSTANTS_H
 
@@ -242,7 +243,7 @@ active::bar();
 ## Using Declaration
 - the ``using <namespace::name>`` declaration tells the compiler to recognize unqualified ``name``s as ``namespace::name``
 - *ex.*
-  ```c
+  ```c++
   using std::cout;
   cout << "this outputs" << std::endl; // here, endl is not using-declared yet, so std:: still needs to be added
   ```
@@ -254,7 +255,7 @@ active::bar();
 - using directives should generally be avoided in order to prevent current and future collisions
 - another possible error is using subsequent namespaces that intersect
   - *ex.*
-    ```c
+    ```c++
     namespace a {
       int foo {};
     }
@@ -275,7 +276,7 @@ active::bar();
 
 # Unnamed Namespace
 - *ex.*
-  ```c
+  ```c++
   namspace {
     void foo() { ... }
   }
@@ -286,7 +287,7 @@ active::bar();
 - typically used to version content
 - members of an inline namespace are treated as though they belong to its enclosing scope, while retaining the ability to be qualified through the namespace
   - *ex.*
-    ```c
+    ```c++
     inline namespace v1 {
       void foo() {}
     }
@@ -300,3 +301,26 @@ active::bar();
       foo(); // addresses to v1 by default
     }
     ```
+
+# Constexpr and Consteval
+- ``constexpr`` functions are evaluated at compile-tine
+  - such a function must have...
+    - no calls to non-``constexpr`` functions
+    - ``constexpr`` arguments (either ``constexpr`` vars or literals)
+  - such functions must be visible to the compiler at all times, therefore its copy must be propagated to each file
+    - this violates the OD rule
+    - to patch this, ``constexpr`` functions are implicitly ``inline``
+  - when restrictions for ``constexpr`` is violated (such as when args are non-``constexpr``), the function is called at runtime
+    - to determine this case, call ``std::is_constant_evaluated()`` within the ``constexpr`` function to check (``C++ 20``)
+    - a way to force compile-time evaluation is to force the return value into a ``constexpr`` variable
+- ``C++ 20`` introduces ``consteval`` which enforces compile-time evaluation
+  - otherwise, compile error
+  - aka ``immediate functions``
+  - ``consteval`` can be used to enforce ``constexpr`` running at compile time
+    - *ex.*
+      ```c++
+      consteval auto compileTime(auto val) { return val; }
+      constexpr int add(int x, int y) { return x + y; }
+      ```
+    - this works by implicitely creating a local ``constexpr`` variable that stores ``add``'s return value
+- 

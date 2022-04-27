@@ -12,7 +12,7 @@
   - ```std::bitset<n>.test(i)``` returns bit $i$ as ```0``` or ```1```
 - it is possible to enforce ```<n>```
   - *ex.*
-    ```c
+    ```c++
     std::bitset<4> foo(std::bitset<4> bar) {
         //...
     }
@@ -29,7 +29,7 @@
 # Bit Masks
 - *def.*: predefined set of bits that will be used for *selecting* parts of bit flags
 - *ex.*
-    ```c
+    ```c++
     constexpr std::uint8_t mask0{ 0b0000'0001 };
     ```
 - common operations
@@ -40,7 +40,7 @@
 
 - meaningful masks
   - *ex.*
-    ```c
+    ```c++
     //...
     constexpr std::uint8_t isMobile { 1 << 3 };
     constexpr std::uint8_t isHorizontal { 1 << 4 };
@@ -49,7 +49,7 @@
 - bitmasks reduce memory use, since most systems assign a full byte to ```bool```s anyway
 - bitmasks reduce parameter counts to improve readability
   - *ex.*
-    ```c
+    ```c++
     void renderScreen( ..., bool isMobile, bool isHorizontal, ...);
     void renderScreen(std::bitset<8> deviceStat)
     ```
@@ -57,7 +57,7 @@
     - in this case, the ```BIT``` constants are defined using object macros by OpenGL
 - multi-bit flags
   - *ex.* RGB using ``std::uint_32``
-    ```c
+    ```c++
     ... RED { 0xFF000000 };
     ... BLUE { 0x00FF0000 };
     ... GREEN { 0x0000FF00 };

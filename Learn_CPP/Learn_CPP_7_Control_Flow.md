@@ -26,7 +26,7 @@
 - a good practice is to put brackets around single statements
 - dangling else paired up with last unmatched if
   - *ex.*
-    ```c
+    ```c++
     if (a)
         if (b) // else is paired to this if
             foo();
@@ -38,7 +38,7 @@
 
 # Switch
 - *ex.*
-    ```c
+    ```c++
     switch (<cond>) {
         case <val1>: // these are called labels
             //...
@@ -56,7 +56,7 @@
 - without ``break``/``return``, execution continues (and overflows into subsequent cases)
   - for C++17, ``[[fallthrough]]`` can be used to replace ``break`` to indicate intentional fallthrough (although not using it is also legal)
   - *ex.*
-    ```c
+    ```c++
     switch(v) {
         case a:
             // ...
@@ -68,7 +68,7 @@
     ```
 - variables can be *declared* but not *initialized* outside labels
     - *ex.*
-        ```c
+        ```c++
         switch(v) {
             int a; // this is legal
             int b {}; // this is illegal!
@@ -79,7 +79,7 @@
         ```
 - label-internal variables share scope with other labels
   - *ex.*
-    ```c
+    ```c++
     switch(v) {
         case 0:
             int x; // this (declaration) is legal
@@ -94,7 +94,7 @@
   - The reason why initializations are illegal is that they require *execution at runtime*, meaning that the compiler requires all variables to be initialized throughout the *entire* scope
     - to solve this issue, open a new scope
       - *ex.*
-        ```c
+        ```c++
         case 0: {
             int y {};
             break;
@@ -104,7 +104,7 @@
 # Goto
 - unconditional jump
 - *ex.*
-    ```c
+    ```c++
     statementLabel:
         foo();
         bar();
@@ -116,13 +116,13 @@
 
 # Loops
 ## While
-```c
+```c++
 while(condition)
     statement;
 ```
 - for intentional infinite loops, use ``while(true)``
 - loop variables should always be signed
-```c
+```c++
 do
     statement;
 while(condition);
@@ -131,18 +131,18 @@ while(condition);
   - it is clearer to have the loop condition at the top
 
 ## For
-```c
+```c++
 for (init; cond; update)
     statement;
 ```
 - ``for`` loops can also produce infinite loops
-```c
+```c++
 for (;;)
     statement;
 ```
 - multiple variables
   - *ex.*
-      ```c
+      ```c++
       for(int x{}, y{}; x < 10 && y < 10; x++, y--)
           ;
       ```
@@ -159,7 +159,7 @@ for (;;)
 ## Standard Exit
 - ``std::atexit(*void())`` sets the function to call at program exit
   - *ex.* runs ``foo`` after ``a``, and exits the program immediately
-    ```c
+    ```c++
     foo() {
         // clean up code
     }
@@ -248,7 +248,7 @@ for (;;)
     - alternatively, use ``std::numeric_limits<std::streamsize>::max()`` which returns the largest number that a stream size can hold
       - use ``#include <limits>``
   - extraction fails
-    ```c
+    ```c++
     if (std::cin.fail()) {
       // handle extraction failure
       std::cin.clear();

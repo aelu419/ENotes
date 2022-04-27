@@ -36,7 +36,7 @@
 - rules to construct a program with the C++ language, such that it is valid
 - breaking syntax rules result in the compilor giving a *syntax error*
 - *ex.* 
-   ```c
+   ```c++
    [Running] cd "/Users/alantao/OneDrive - Georgia Institute of Technology/hobby/courses/notes/Learn_CPP/" && g++ 0_first.cpp -o 0_first && "/Users/alantao/OneDrive - Georgia Institute of Technology/hobby/courses/notes/Learn_CPP/"0_first
    0_first.cpp:6:39: error: expected ';' after expression
       std::cout << "Hello World" << endl // print (send text "to" std::cout)
@@ -53,11 +53,11 @@
 
 # 1.2 Comments
 ## Single Line
-```c
+```c++
 // this is a single line comment
 ```
 ## Multi Line
-```c
+```c++
 /* first instance */
 
 /* This is purely a beautified format
@@ -71,7 +71,7 @@
   - use the proper level of description (this program, this function, these following lines, ...)
 - Describe step-by-step procedure **within** a program/function
   - *ex.*
-      ```c
+      ```c++
       // to ..., we will
       // 1. do a
       // 2. do b
@@ -79,17 +79,17 @@
       ```
 - At the single line level, comments describe *why* something is written, in a way that is meaningful
   - *ex. bad*
-      ```c
+      ```c++
       // add a to b
       b += a;
       ```
   - *ex. good 1*
-      ```c
+      ```c++
       // simulate a die toss (from 0 to 5)
       d = std::rand() % 6;
       ```
   - *ex. good 2*
-      ```c
+      ```c++
       // linked list used instead of array because ...
       ```
       - this helps remind self about why certain choices were taken
@@ -108,7 +108,7 @@
     - *def.* **identifier**: the name of a variable
 
 ## Definition
-   ```c
+   ```c++
    int x; // DEFINES a variable of type int called "x"
    ```
    - at runtime, a definition causes a instantiation
@@ -116,7 +116,7 @@
    - *def.* **data type**: tells the compiler what type of value the object will store; tells the program how to *interpret* memory
      - in c++, the data type MUST be known at compile-time
    - multiple definition:
-      ```c
+      ```c++
       int a, b; // not recommended, bad for comment clarity
       ```
 
@@ -124,7 +124,7 @@
 ## Declaration
    - **Copy Assignment**:
       - *ex.*
-        ```c
+        ```c++
         int a;
         a = 10; // = is the assignment operator
         ```
@@ -133,18 +133,18 @@
       - *def.*: define and assign at the same time\
       <br>
       1. Copy Initialization
-         ```c
+         ```c++
          T a = b; // copies RHS to LHS
          ```
       2. Direct Initialization
-         ```c
+         ```c++
          // selects the matching constructor for type T
          // then write the result directly to a
          // ! narrow conversion is permitted in some compilers
          T a(b);
          ```
       3. (Direct) Brace Initialization
-         ```c
+         ```c++
          // basically direct initialization,
          // but narrow conversion is NOT permitted
          int width { 4.5 }; // --> throws error
@@ -153,7 +153,7 @@
         - zero initialization: the special case of value initialization when it is defaulted to 0
       - **prefer direct brace when possible**
    - Note that some compilers may forbid the use of uninitialized variables. The following code could go around this issue.
-      ```c
+      ```c++
       void doNothing(int&) // Don't worry about what & is for now, we're just using it to trick the compiler into thinking variable x is used
       {
       }
@@ -196,7 +196,7 @@
 - lines shoule be 80 characters maximum
 - Bracket styles
   - 1TBS
-      ```c
+      ```c++
       if {
          // ...
       } else {
@@ -204,7 +204,7 @@
       }
       ```
   - K&R
-      ```c
+      ```c++
       if
       {
          // ...
@@ -215,7 +215,7 @@
       }
       ```
   - Stroustrup
-      ```c
+      ```c++
       if {
          // ...
       }
@@ -225,18 +225,18 @@
       ```
 - split line expressions
    - operator on the new line
-      ```c
+      ```c++
       int a = b
          + c
          * d;
       ```
    - align variables with white space
-      ```c
+      ```c++
       int a    = 8;
       int time = 10;
       ```
    - line between previous block and this comment
-      ```c
+      ```c++
       // comment 1
       int a;
 

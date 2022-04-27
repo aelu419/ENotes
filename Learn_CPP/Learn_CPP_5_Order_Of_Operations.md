@@ -17,7 +17,7 @@
 - a good practice is to use parenthesis on any complex and not-obvious expressions
 - the variables themselves are not evaluated in order
   - *ex.*
-    ```c
+    ```c++
     bar = a() + b(); // a and b are not guaranteed to be called in order
     ```
   - make sure not to assume any order, and write expressions in such a way that does not depend on order
@@ -30,7 +30,7 @@
 - ```x % y``` takes the sign of x and ignores the sign of y
   - the modulo of a negative number is just the negative of the modulo of the positive
 ## Exponent
-```c
+```c++
 #include <cmath>
 // ...
 std::pow(base, exp); // returns a double
@@ -58,7 +58,7 @@ std::pow(base, exp); // returns a double
 # Comparisons
 - floating point comparisons are fine as long as not for equality
 - use epsilon for equality
-    ```c
+    ```c++
     #include <cmath> // for std::abs()
 
     // epsilon is an absolute value
@@ -70,7 +70,7 @@ std::pow(base, exp); // returns a double
     ```
   - absolute episilons are bad for large numbers, since significant figures do not always evaluate to the same scale
 - Knuth's method
-    ```c
+    ```c++
     // a common choice for epsilon is 1e-8
     return (std::abs(a-b) <= std::max(std::abs(a), std::abs(b)) * epsilon);
     ```

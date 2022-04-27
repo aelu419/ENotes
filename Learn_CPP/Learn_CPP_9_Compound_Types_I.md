@@ -10,9 +10,6 @@
 - [Type Deduction with Pointers/References](#type-deduction-with-pointersreferences)
   - [Top vs. Low Level Const](#top-vs-low-level-const)
   - [Deduction for Pointers](#deduction-for-pointers)
-- [Program-defined Types](#program-defined-types)
-  - [Structs](#structs)
-  - [Enums](#enums)
 
 # Value Categories 
 ## LValue
@@ -38,7 +35,7 @@
 - note that lvalue references cannot change binding by assignment
   - the changing is called **reseating**
 - the lifespan of the reference is *independent* from the referent
-  - ```c
+  - ```c++
     int x { 0 };
     {
         int& ref { x };
@@ -51,7 +48,7 @@
   - the ``const`` modifier prevents writing to the referent
   - the accessibility of the reference is *independent* fromn that of the referent
   - *ex.*
-    - ```c
+    - ```c++
       int x{0}; // can both read and write
       const int& ref{x}; // can read but not write
       ```
@@ -112,7 +109,7 @@
   - as well as static variables
 - avoid returning non-const static variables
   - *ex.*
-  - ```c
+  - ```c++
     const int& getItr() {
       static int itr{0};
       itr++;
@@ -147,62 +144,3 @@
   - the same rules and best practices apply to pointers similarly as references
   - ``const auto* const ptr`` guaranteed constant pointer to constant value
 
-# Program-defined Types
-## Structs
-- conventions
-  - pascal case, no ``_t``
-  - use header file with the same name as the program defined type
-  - for every file referencing the type, the header file should be included
-- type definitions do not need to adhere to one-definition rule
-  - one per ``translation unit`` instead of per entire program
-- program vs. user defined
-  - user-defined includes types that are defined in non-core cpp libraries as well as actual custom types
-  - *ex.* ``std::string`` is a user defined type
-    - program-defined excludes these cases
-
-## Enums
-- ``enum`` marks an unscoped enumeration
-  - each value in an ``enum`` is an enumerator
-  - *ex.* ``red`` in ``Color``
-  - each ``enum`` is a distince type at compile time, even if underlying values are the same
-  - ``Color a { dog };`` illegal
-  - *unscoped* here just means that the values within the ``enum`` bracket has the same scope as the ``enum`` itself, which means it is not "creating scope"
-    - ```c
-      enum Color {
-        red,
-        green,
-        blue,
-      }
-      ```
-   - for this reason, enum enumerators within the same scope cannot have the same name
-     - this can be solved by wrapping with ``namespace``s
-
--  values can be explicitely assigned to enumerators
-   -  duplicate values can be given to different enumerators within the same ``enum``
-   -  however, this makes the ``enum`` non-distinct and thereby interchangeable
-
-- ``enum``s can be assigned values explicitly
-- ```c
-  std::ostream& operator<<(std::ostream& out, Color color)
-  {
-    switch (color)
-    {
-    case black: out << "black";  break;
-    case red:   out << "red";    break;
-    case blue:  out << "blue";   break;
-    default:    out << "???";    break;
-    }
-
-    return out;
-  }
-  ```
-  - overrides the ``<<`` operator between ``std::cout`` and ``color``
-  - usually, ``enum`` has the same size as ``int``
-  - it is possible to specify underlying type explicitly
-  ```c
-  enum Color : std::uint8_t
-  {
-    //...
-  };
-  ```
-- 

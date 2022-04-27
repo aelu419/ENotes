@@ -90,7 +90,7 @@
   - *def.* **precision**: number of significant digits supported
   - ```std::cout``` has default precision of $6$, no matter the entered value
     - use *output manipulator* to change precision:
-        ```c
+        ```c++
         std::cout << std::setprecision(10);
         ```
 - ```float``` (usually 7 precision, from 6 to 9)
@@ -132,7 +132,7 @@
   - use ```std::getline(<input>, <str out>, <delimiter>)``` instead
     - ```std::ws``` tells ```cin``` to ignore white space
     - *ex.*
-        ```c
+        ```c++
         std::string name{}; // zero init a string
         std::getline(std::cin >> std::ws, name);
         ```
@@ -180,7 +180,7 @@
   - cannot see in debug window, since by definition it is a literal in the compiled code
   - messes with scopes
   - name may collide with actual variable name, resulting in cases such as
-    ```c
+    ```c++
     #define max_t = 10
 
     //...

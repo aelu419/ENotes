@@ -33,7 +33,7 @@
 - prevent the need for removing debug lines
   1. use directives to guard debug lines
     - *ex.*
-        ```c
+        ```c++
         #define ENABLE_DEBUG
 
         //...
