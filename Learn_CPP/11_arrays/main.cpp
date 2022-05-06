@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iterator>
+#include <limits>
 
 int main() {
 
@@ -9,7 +10,7 @@ int main() {
         std::cin>>target;
         if (std::cin.fail())
             std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsizzez>::max(), '\n');
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
     constexpr int array[]{ 4, 6, 7, 3, 8, 2, 1, 9, 5 };

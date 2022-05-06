@@ -44,13 +44,13 @@
         - similar to bytecode
 # CUDA C
 ## Sample Loop Parallelization
-- ```c
+- ```c++
   // c is a out array
   void addArrays(int* a, int* b, int* c, int cnt) {
       for (int i = 0;  i < cnt; i++) c[i] = a[i] + b[i];
   }
   ```
-- ```c
+- ```c++
   #include "cuda_runtime.h"
   #include "device_launch_parameters.h"
   #include "stdio.h"
@@ -117,7 +117,7 @@
   - ``cudaGetDeviceProperties(*cudaDeviceProp,  int count)``
     - index (in case of multiple devices), compute capability, thread count, etc
   - ``curand.h`` generate random floats
-    - ```c
+    - ```c++
       curandGenerator_t gen;
       curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MTGP32);
       curandSetPseudoRandomGeneratorSeed(gen, time(0)); // current time
@@ -138,7 +138,7 @@
 - apply the same function to each entry in a collection
 - *ex.*
   setup  in ``main``
-  ```c
+  ```c++
     const int count = 123456;
     const int size = count * sizeof(float);
     // ... generate d* -> array of <count> random floats
@@ -148,7 +148,7 @@
     // the product of all numbers above is above <count>, which makes the allocated thread count sufficient
   ```
   operation outside ``main``
-  ```c
+  ```c++
   __global__ void addTen(float* d, int count) {
     int threadPerBlock = blockDim.x * blockDim.y * blockDim.z;
     int threadPosInBlock = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
@@ -163,7 +163,7 @@
   }
   ```
   usage in ``main``
-  ```c
+  ```c++
     addTen<<<grid, block>>>(d, count);
     cudaMemcpy(h, d, size, cudaMemcpyDeviceToHost);
     cudaFree(d);
@@ -173,7 +173,7 @@
 - multiple inputs in an orderly manner for the same function
 - *ex.*
   - problem: Black Scholes Formula with 5 parameters and 2 outputs
-  - ```c
+  - ```c++
     // initialize count and then size
     // ...
     // initialize 5 pointers for arrays of args
@@ -191,14 +191,14 @@
     
     price<<<1, count>>>(args[0], args[1], args[2], args[3], args[4], dc, dp); // for the sake of simplicity, here only 1 
     ```
-  - ```c
+  - ```c++
     // to simplify actual logic, this function is a gateway to the actual computing function
     __global__ void price(float* k, float* s, float* t, float* r, float* v, float*c, float* p) {
       int idx = threadIdx.x; // more advanced argument addressing could be done here
       price(k[idx], ..., &p[idx]);
     }
     ```
-  - ```c
+  - ```c++
     __device__ __host__ void price(float k, ..., float* p) {
       // compute using math.h functions such as sqrtf and etc.
       ...
@@ -208,7 +208,7 @@
     }
     ```
 
-  - ```c
+  - ```c++
     #define _USE_MATH_DEFINES
     __device__ __host__ __inline__ float N(float x) {
       return 0.5 + 0.5 * erf(x * M_SQRT1_2);
@@ -223,7 +223,7 @@
 - for example, sum $N$ elements, initialize $T = N / 2$
   - for each iteration, $T \leftarrow T / 2$, sum every $2^i$'th value in the buffer
   - *ex.*
-    ```c
+    ```c++
     // with one single TB handling the entire thread count
     __global__ void sumSingleBlock(int *d) {
       int tid = threadIdx.x;
@@ -253,7 +253,7 @@
   - at iteration 0, ``r[N-1]`` "looks at" itself and the element 1 to the left
   - at iteration 1, itself and 2 to the left
   - ...
-- ```c
+- ```c++
   // with 1 TB handling the entire thread count
   __global__ void runningSum(int* d) {
 
