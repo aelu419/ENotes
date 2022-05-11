@@ -98,7 +98,7 @@
 
 ## Recursion
 > not recorded as it is general programming
-- **memoization**: ``C++`` (or ``C`` in general) supports memoization by ``static`` variables within the function that stores data between different function invokations
+- **memoization**: ``C++`` (or ``C`` in general) supports memoization by ``static`` variables within the function that stores data between different function invocations
 
 # Commandline Arguments
 - the full ``main`` definition:
@@ -197,7 +197,7 @@
   - note that this defaults to ``const``, in this case the lambda cannot modify captured values
   - to make *all* members mutable, add the ``mutable`` keyword
     - note that capture only occurs at definition, and the captured variables persist between calls
-      - upon invokation, lambdas do not re-capture whatever value those members are at the point of invocation
+      - upon invocation, lambdas do not re-capture whatever value those members are at the point of invocation
     - ```c++
       int initialValue;
       std::cin>>initialValue;
