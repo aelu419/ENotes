@@ -37,7 +37,7 @@
         void print() {
             std::cout<< ... ;
         }
-    }
+    };
     ```
   - methods can be accessed through the member selection operator ``operator.``
   - methods have *implicit object* of the class instance itself, meaning that there is no need for explicitly defining and referencing ``self`` as in ``Python``
@@ -51,7 +51,7 @@
     ```c++
     class Character {
         using health_type = int;
-    }
+    };
 
     // ...
     Character::health_type hp{0};
@@ -251,7 +251,7 @@ class ResetClass {
     void reset() {
         *this = ResetClass(); // replace the memory it occupies
     }
-}
+};
 ```
 ## Destructor
 - executed when the instance is destroyed
@@ -278,7 +278,7 @@ class ResetClass {
       ~Classroom() {
           delete students;
       }
-  }
+  };
   ```
 - note that the ``exit`` funtion quits the program immediately without calling destructors
 
@@ -301,7 +301,7 @@ class ResetClass {
       Player(int hp) {
           this->hp = hp;
       }
-  }
+  };
   ```
 ### Member Function Chaining Using ``This``
 - ```c++
@@ -310,7 +310,7 @@ class ResetClass {
       Player& walk(){
           return *this; // return the content pointed by the this pointer
       }
-  }
+  };
   //
   player
       .walk()
@@ -332,7 +332,7 @@ class ResetClass {
         Student getStudent(int index) { // note that this is lower camel case
             // ...
         }
-    }
+    };
 
     Classroom::Classroom(int nStudents) {
         // ...
@@ -375,7 +375,7 @@ class ResetClass {
         // ...
         public:
         double getFloatingPoint() const { return static_cast<double>(m_numerator) / m_denominator; }
-    }
+    };
     ```
 - constructors can never by marked ``const``
 - in functions, use ``const`` reference to promise the parameter will not be changed
@@ -415,7 +415,7 @@ class ResetClass {
   class Account {
       // ... other public and private members
       friend void reset(Account& account);
-  }
+  };
 
   void reset(Account& account) {
       // access private members here
@@ -427,12 +427,12 @@ class ResetClass {
   class Account {
       // ...
       friend void associate(Account& account, Bank& bank);
-  }
+  };
 
   class Bank {
       // ...
       friend void associate(Account& account, Bank& bank);
-  }
+  };
 
   void associate(Account& account, Bank& bank) {
       // ...
@@ -443,12 +443,12 @@ class ResetClass {
   ```c++
   class Account {
       // ...
-  }
+  };
 
   class Bank {
       // ...
       friend class Account;
-  }
+  };
   ```
     - note that this is one-sided
     - sadly, `friend`ship is not symmetric or transitive, at least not in `C++`
