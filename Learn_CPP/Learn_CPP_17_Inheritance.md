@@ -38,7 +38,6 @@
 
 ## Polynmorphism
 - implementations of the same method is prioritized for the derived class comparing to the base class
-  - this allows for polymorphism for different derived classes
 - derived implementations can call `BaseClassName::functionNames(functionPararms)` when overriding, so that the new implementation is additional instead of redoing
 - to force call base implementation, use `static_cast<BaseClass>` on the object first, and then call the function
 ## Visibility Change
