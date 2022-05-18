@@ -64,3 +64,6 @@
 
 ### Exclude Mac debug builds
 *.dSYM
+
+### Mac
+.DS_Store
