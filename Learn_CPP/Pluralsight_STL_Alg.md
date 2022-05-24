@@ -1,4 +1,4 @@
-# Misc
+# Intro
 - free functions: container functions are usually free functions that accept a container, rather than the container's member function
   - the language doesn't focus much on inheritance
   - instead, focus on iterators that each container produces
@@ -58,4 +58,63 @@
   - returns the sum of type `S`
   - note that this `accumulate` is iterative, not logarithmic
 - `for_each`
-- `transform(i_begin, i_end, o_begin, mapping_function)`
+
+# Generating & Manipulating Collections
+- `operator=`, `copy`, `copy_if`, `copy_n`, `copy_backward`
+  - common parameters are `A_begin, A_end, B_begin`
+  - `copy_n` takes `A_begin, n, B_begin` instead
+  - `copy_backward` takes `A_begin, A_end, B_end` instead
+- for non-copyable types, use `move` and `move_backward` instead
+- removing
+  - note that `vector` keeps entries consecutive, moving subsequent entries forward if gaps form in the middle
+  - trailing elements stay in their place and are not erased
+    - needs to call `erase` manually
+      - `remove(A_begin, A_end, targetOrPredicate)` returns the new end pointer of A after the operation
+      - `erase(E_begin, E_end)` needs to set parameters as that new end pointer and the original end (the fixed array's end)
+    - a common way is to use the erase-remove idiom
+      - `erase(remove(b, e, t), e)`
+- creating and filling collections
+  - `fill`, `fill_n`
+  - `iota` (see learn cpp notes) for incrementing
+  - `generate`, `generate_n` for creating elements with lambda (no parameter, returns `T`)
+    - it is common to capture a index variable by reference and use that in the lambda
+- replacing values
+  - `replace` for target, `replace_if` for lambda
+- mapping
+  - `transform(i_begin, i_end, o_begin, mapping_function)` with mapping function from `I` to `O`
+  - `transform(i1_begin, i1_end, i2_begin, o_begin, mapping)` with mapping function from `(I1, I2)` to `O`
+- eliminating duplicates
+  - `unique`, `unique_copy` eliminates consecutive duplicates
+    - a similar erase-remove idiom exists
+- reversing
+  - `reverse`, `reverse_copy`
+  - for single elements, `itr_swap`
+
+# Iterators
+- preallocation: not really practical for dynamic-sized data
+- usually containers support iterators for insertion
+  - `back_inserter` and `front_inserter` (no guarantee that specific container will support)
+  - both are free `std` functions taking the container as the parameter
+  - common use is to use `back_inserter(v)` in functions like `generate_n` instead of the beginning pointer
+  - using `front_inserter` will always insert at the first element, leading to a reversed order
+    - front-inserting iota on a `deque` will actually create decrementing elements at the front
+- reverse iterators
+  - `rbegin` to `rend` is the reverse of `begin` to `end`
+  - reverse iterators are differently typed from normal iterators
+- `operator+` is defined for `int`
+- `operator-` is defined for `int` and other iterators
+  - subtracting the other iterator means to find the signed distance
+- `const` iterators (see learn cpp notes for `cbegin` and `cend`)
+  - `crbegin` and `crend`
+  - most containers don't support `const` objects since they need to move them around in memory
+    - in that case, explicitly ask for `const` via the `c` prefixed methods above
+
+# Misc
+- `swap`, `itr_swap`
+- `swap_ranges`, works within or between collections
+  - `A_begin, A_end, B_begin`
+- `rotate`
+  - if partial, it moves `n` elements move up for certain levels
+- `partition`
+  - everything satisfying a lambda moves to the top, the rest moves to the bottom
+  - variant `stable_partition`
