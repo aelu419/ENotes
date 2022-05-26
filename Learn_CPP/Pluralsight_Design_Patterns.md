@@ -253,7 +253,69 @@
 - usually with a tree structure that can be *parsed*
 - terminal vs. non-terminal
   - *ex.* 1+2, 1 and 2 are terminal, + is non-terminal
-- 
+- implementation
+  - an abstract base `Expression` class
+    - with reference to a `Context` class global to the interpreter (and all its child nodes)
+    - an `interpret` function of type `void(Context)`
+    - a `TerminalExpression` subclass
+      - cannot have child nodes
+      - the `interpret` function processes its own data
+    - a `NonTerminalExpression` subclass
+      - can have child nodes (in some kind of container)
+      - the `interpret` function processes each child first, and then combines them according to the node's semantics
+  - to evaluate the entire expression, use `interpret` on the root node
+- issues
+  - complex gramamrs are hard to implement
+  - lexing and parsing are difficult, especially for fuzzy cases
+
+## Iterator Pattern
+- traversing containers
+- there are built-in iterators
+- to wrap a built-in iterator
+  - provide functionality for `first`, `next`, `done`, `current`
+  - *ex.* add skips in `next` for some skipping predicate
+    - parameters can be injected from the constructor
+  - for custom containers, the iterator wrapper often needs to be a `friend` class
+
+
+## Mediator
+- point of communication between different sections
+- reduce coupling and multiple dependencies on the same thing
+- centralizes control and complexity
+- implementation
+  - `Mediator` abstract base class defining types of interactions between colleagues
+    - `ConcreteMediator` subclass implementing the interactions
+    - `Colleague` concrete instances are managed by the `ConcreteMediator`
+  - `Colleague` abstract base class
+    - with reference to the `Mediator`
+    - implemented by `ConcreteColleague`s that communicate with the `Mediator` by calling functions
+  - the pattern resembles a chatroom
+- issue
+  - might become bloated
+    - can divide into several different mediators
+
+## Memento
+- undoing tasks of high complexity
+- components
+  - a `Memento` that stores the internal state of the `Originator`
+  - a `Originator` that creates the memento
+  - a `Caretaker` that safeguards the memento
+- implementation
+  - a `Memento` class 
+    - that is a `friend class` of the `Originator`
+    - getter(s) for stored internal data
+  - an `Originator` class
+    - with `createMemento` method of type `Memento*()`
+    - with stack of `Memento`s
+    - with an `undo` function that pops the `Memento` and restores the last one
+    - some operations that pushes to the `Memento`
+- implementing redo
+  - in `Originator`, add another stack to store undone `Memento`s
+  - upon undo, push poped `Memnto` to the undone stack
+  - upon non-undo operation, clear undone stack
+- issues
+  - snapshot frequency & lifetime leading to large stack
+  - other techniques to minimize stack size (storing only changes, etc.)
 
 # Structural
 - 
