@@ -318,4 +318,168 @@
   - other techniques to minimize stack size (storing only changes, etc.)
 
 # Structural
+## Adapter
+- wrapper/translator pattern
+- convert existing class to needed interface
+  - commonly used for legacy code
+  - sometimes used to unify different API
+- implementation of an object adapter (wraps an object)
+  - create a concrete `Adapter` class that
+    - holds the wrapped class instance which is often binded through constructor
+    - defines certain points of interaction from the public
+  - do NOT write business logic in `Adapter`
+    - keep it as lightweight as possible
+- implementation of a class adaptor
+  - create a concrete `Adapter` class that
+    - inherits both the target API interface and the wrapped class
+
+## Bridge
+- decouple abstraction from implementation
+  - isolate clients from changes in abstraction and implementation
+  - handle duplicated inheritance
+    - for example, one action is done with different API, leading to different subclasses for each API
+      - `A` becomes `AWithToolA`, `AWithToolB`, ...
+      - `B` becomes `BWithToolA`, `BWithToolB`, ...
+      - this leads to MxN classes in the same hierarchy
+- implementation
+  - an abstract base `Abstraction` class for entities with some operation that
+    - holds an implementator instance
+    - is derived into concrete entities
+  - an abstract base `Implementator` that
+    - defines a implementation for the operation named in `Abstraction`
+    - is derived into concrete implementors for each API
+- the result is M+N classes instead
+  - both `Abstraction` and `Implementor` can be extended
+- implementation of PImpl (Pointer to Implementation) idiom
+  - `C++` specific, in order to speed up compilation
+  - in some class
+    - declare another class with private visibility called `impl`
+    - create a unique pointer of type `impl` called pimpl
+  - in another file, define functionality in the `impl` class
+    - for each method in the custom class itself, forward every function to the appropriate `pimpl`'s functionality
+    - similar to regular bridge, `impl` can be subclassed
+  - pro
+    - faster compilation
+    - hide internal data & dependencies
+  - con
+    - memory overhead
+    - maintenance overhead
+    - complicates inheritance
+
+## Composite
+- one or more types of items that needs to be treated uniformly
+  - unifying interface between collections and single items
+- uses a tree-based structure
+  - avoids complex loops over data
+- implementation
+  - a abstract base `Component` class that
+    - defines some business operations
+    - defines `add` of type `void(Component)`
+    - defines `remove` of type `void(Component)` or `Component(Component)`
+    - defines `getChild` of type `Component(int)`
+    - is derived into
+      - `Leaf` with only the operations implemented (other operations just voided)
+      - `Composite` with everything implemented
+- pro
+  - simplify client code
+- con
+  - the client must know the difference between `Leaf` and `Composite`
+  - added complexity
+
+## Decorator
+- wrapper
+  - adds functionality through owning instead of inheriting
+  - dynamic
+- useful when
+  - the decorated class cannot be changed
+  - some features are optional
+  - logic is not part of the core business features
+- implementation
+  - a `Decoratorated` class that
+    - defines a `virtual` destructor
+    - defines some business operations
+  - a `Decorator` class that
+    - inherits from `Decorated`, and
+      - implements the destructor
+      - implements a constructor that injects a `Decorated` instance
+      - holds an instance of the `Decorated` class
+      - defines added functionality to aid business operations
+      - overrides the busines operations referencing those added functionalities
+      - is derived into several `ConcreteDecorator` classes that
+        - implements the additional functionality
+- use
+  - note that a `Decorator`/`ConcreteDecorator` instance can be injected into another because they all inherit from `Decorated`
+- static decorators using `template`
+  - gives the benefit from accessing `static` functions from the immediate `ConcreteDecorator` and not necessarily the base `Decorated`
+    - `T instance`, `T::foo()`
+  - the drawback is that the constructors of `ConcreteDecorator`s must agree
+    - alternatively, use variable parameters and pass them to the held instance
+      - `template <typename T, typename... Args>`
+      - `ConcreteDecoratorB(Args... args) : T(std::forward<Args>(args)...) {}`
+      - however this disables hinting
+- functional decorators using `std::function`
+  - a generic implementation would just be overloading `operator()`
+  - another implementation is with `template`
+    - `typename R`, `typename... Args`
+    - constructor containing `std::function<R(Args ...)>`
+      - this is then stored instead of the base `Decorated` object
+      - it is common to wrap the constructor in a `template` method to avoid having to type in the type arguments
+    - `R operator()(Args ... args);`
+    - note that `std::function` cannot reference member functions, so instead wrap it with a free function that takes the `Decorated` (or some specific `ConcreteDecorator`) instance and invokes the method
+- issues
+  - creates a lot of similar, small classes
+  - the base class needs to be lightweight
+  - limitations with each implementation
+
+## Facade
+- avoid tight coupling with client and subsystems
+- implementation
+  - a concrete `Facade` that
+    - holds reference to certain subsystems, injected through constructor
+    - defines business operations that draws upon subsystem features
+  - note the subsystems still needs to be constructed manually
+- issues
+  - subsystem dependency on the `Facade` class
+  - overall larger codebase
+- note that this is not the same with the Mediator pattern
+  - subsystems are not aware of the `Facade` itself or need to communicate with eachother
+
+## Flyweight
+- share common parts of state between multiple objects
+- intrinsic states are immutable, extrinsic states are mutable
+- implementation
+  - a `FlyweightFactory` managing correct sharing and creation of flyweights
+    - uses a hashmap to keep track of `Flyweight` instances
+  - `Flyweight` storing shared intrinsic states and functionalities of a certain entity
+  - entities with reference to some `Flyweight` instance
+- issues
+  - added complexity
+  - most can just be done with `static` immutable members
+
+## Null Object
+- provide default behavior for `NULL` cases
+  - prevent need of repeated null checks
+- implementation
+  - for a certain `Entity`, create a subclass `NullEntity` that overloads functionality
+  - instead of returning `NULL`, return a `NullEntity` instance
+  - it is commonly to define a `Entity` method named `isNull` of type `bool()` and implement in both `Entity` and `NullEntity` classes
+
+## Proxy
+- substitue for actual object
+- implementation
+  - both the real `Service` and its `Proxy` inherits from the same interface
+  - the `Proxy`
+    - holds a reference to the real `Service`
+    - forwards calls to business operations to the real `Service`
+    - adds certain preprocessing and postprocessing operations
+  - the `Service`
+    - may contain additional operations and members not visible to `Proxy`, as they are sibling classes
+- variants
+  - remote proxy: local object as representation of a remote object (ex. ATM is a remote proxy of a bank)
+    - it is common to perform preprocessing in remote proxy
+  - virtual proxy: send dummy result first, and then send correct result once the service consumes the task (ex. lazy loading)
+  - protection proxy: mainly to control access
+  - cache proxy: stores operation results of the real service
+  - smart proxy: additional functionality that is invisible to the client
+    - counting, logger, etc.
 - 
