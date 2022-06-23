@@ -1,0 +1,11 @@
+// configured options and settings, variables marked with equivalent notations
+// note that the constants being defined are on the left
+//           the environment/project variables are on the right
+
+// note that the App on the right is the project name, alternatively just write PROJECT
+
+#define App_VERSION_MAJOR @App_VERSION_MAJOR@
+#define App_VERSION_MINOR ${App_VERSION_MINOR}
+
+// in the generated header file Config.h, these directives will actually work
+// CMake will subsitute environment variables on the right with configured values

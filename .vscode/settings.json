@@ -64,7 +64,8 @@
         "__bits": "cpp",
         "compare": "cpp",
         "concepts": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "*.in": "cpp"
     },
     "code-runner.executorMap": {
         "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
@@ -76,5 +77,5 @@
     "editor.rulers": [
         80
     ],
-    "C_Cpp.autocompleteAddParentheses": true
+    "C_Cpp.autocompleteAddParentheses": true,
 }
