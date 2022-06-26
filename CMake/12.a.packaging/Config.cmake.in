@@ -1,0 +1,4 @@
+@PACKAGE_INIT@
+
+// reference the exported Math library
+include ( "${CMAKE_CURRENT_LIST_DIR}/MathTargets.cmake" )
