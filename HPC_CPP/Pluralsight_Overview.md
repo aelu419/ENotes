@@ -1,0 +1,4 @@
+- SIMD for single core acceleration over sets of data
+- OpenMP or comparative tools for multi-threading on the CPU
+- several approaches for dedicated hardware, such as CUDA with Nvidia GPU
+- cross-device coordination with MPI

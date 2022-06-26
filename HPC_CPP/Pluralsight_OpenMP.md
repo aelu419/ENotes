@@ -1,0 +1,37 @@
+# Single Core
+- in current day, the compiler usually takes care of elementary optimizations to minimize operations
+  - *ex.* `x^2 + 2x` becomes `(x+2)x` removing one multiplication
+- uniform operations over vectors repeat a lot of the same steps, SIMD tries to optimize this scenario for one CPU core
+  - parallelization at the instruction level
+  - special registers used to store vectorized data
+- support for SMID registers vary by producer
+  - AVX for both Intel and AMD
+    - xmm: 128b
+    - ymm: 128~255
+    - zmm: 256~511
+  - SSE for Intel
+    - xmm only, named xmm0 ~ xmm7
+- inline assembly allowed on some platforms
+  - use assembly instructions involving the avx registers
+  - the issue is that the approach is chip-dependent, some chips have more support than others and multiple versions may need to be written
+
+# OpenMP Multithreading
+- imperative vs. declarative parallelism
+  - **imperative**:
+    - partition the data and create threads for each partition
+    - run the computations concurrently
+    - challenge of sharing data across threads
+    - libraries like Microsoft PPL, Intel TBB, etc.
+  - **declarative**:
+    - leave sequential code as is, but add compiler hints to suggest parallelization
+- OpenMP is a standard for *decorating* code for multiprocessing
+  - **data parallelism**: *ex.* parallelize a loop
+  - **task parallelism**: *ex.* run block of code in a separate thread
+  - compiler+library solution
+    - to process the decorations
+  - supports C/C++ and Fortran
+- C++ uses `#pragma` directives
+- compiler clauses supporting data sharing, synchronization,  scheduling, etc.
+- certain compilers automatically add parallelization *without* decoration
+  - these compilers make use of OpenMP implicitly
+- 
