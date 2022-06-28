@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(Main VERSION 1.0.0)
 
-set(CXX_STANDARD 17)
-set(CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(Main main.cpp)
 
@@ -32,7 +32,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem regex)
 
 # the headers-only libraries can just be included
 # for example, the Array library is included below without actually mentioning it
-target_include_directories(Main PUBLIC ${BOOST_INCLUDE_DIRS})
+target_include_directories(Main PUBLIC ${Boost_INCLUDE_DIRS})
 
 message(STATUS "Boost version: ${Boost_VERSION}")
 
