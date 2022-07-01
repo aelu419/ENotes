@@ -1,6 +1,5 @@
 #include <iostream> 
 #include <mpi.h>
-#include "person.h"
 
 int main(int argc, char* argv[]) {
 
@@ -12,7 +11,7 @@ int main(int argc, char* argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     if (rank == 0) {
-        Person p{};
+        int n = 1;
 
         for (size_t i = 1; i < size; i++) {
             MPI_Send(&n, 1, MPI_INT, i, 0, MPI_COMM_WORLD);

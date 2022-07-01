@@ -1,57 +1,70 @@
-#include <iostream> 
+#include <iostream>
 #include <mpi.h>
+#include "person.h"
+#include <sstream>
+#include <string>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 
-int main(int argc, char* argv[]) {
-
-    /**
-     * concepts
-     *  - communicator: group of processes, by default MPI_COMM_WORLD
-     * `- rank: position of the processes within the communicator, 0 indexed, always contiguous
-     * api prefixed by MPI_
-     * MPI uses its own typedefs
-     */
-
-    // note MPI is installed via HomeBrew
-
+int main(int argc, char *argv[])
+{
     MPI_Init(&argc, &argv);
 
-    // actual MPI program
     int size, rank;
 
-    // find the size and rank of this process within the communicator, then outputting then to appropriate variables
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    if (rank == 0) {
-        std::cout << "Enter a number: ";
-        int n;
-        std::cin >> n;
+    if (rank == 0)
+    {
 
-        // send number to every OTHER process
-        // note that @i starts at 1
-        for (size_t i = 1; i < size; i++) {
-            /**
-             * @brief sends the 
-             * &n number to send
-             * 1 count
-             * MPI_INT type
-             * i destination rank, up to size
-             * 0 tag
-             * MPI_COMM_WORLD use default communicator
-             */
-            MPI_Send(&n, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+        Person p{"bob", 2};
+
+        // serialize
+        std::ostringstream oss;
+        boost::archive::text_oarchive ar(oss);
+        ar << p;
+
+        std::string s = oss.str();
+        int len = s.length() + 1; // account for \0
+
+        std::cout << "sending person " << p.name << " of age " << p.age << " as serialized " << s.c_str() << " (buffer length " << len << ")" << std::endl;
+
+        // send serialized custom object
+        for (size_t i = 1; i < size; i++)
+        {
+            MPI_Send(s.c_str(), len, MPI_CHAR, i, 0, MPI_COMM_WORLD);
         }
-    } else {
-        // receive a number
-        int n;
-        MPI_Recv(&n, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+    else
+    {
+        // note: this receive does not specify the count of received data
+        MPI_Status status;
+        MPI_Probe(0, 0, MPI_COMM_WORLD, &status);
+        int count;
+        MPI_Get_count(&status, MPI_CHAR, &count);
+        std::cout << "expecting an incoming string of size " << count << "\n";
 
-        // note the cout is *proxied* by MPI to show on the local process, even if the receiver is another process
-        std::cout << n << "*" << rank << " = " << n * rank << std::endl;
+        char *buffer = new char[count];
+
+        // note the use of status instead of _IGNORE
+        MPI_Recv(buffer, count, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
+
+        std::cout << buffer << std::endl;
+
+        // deserialize
+        std::istringstream iss(buffer);
+        boost::archive::text_iarchive ar(iss);
+
+        Person p;
+        ar >> p;
+
+        std::cout << "received person of name " << p.name << " and age " << p.age << "\n";
+
+        delete[] buffer;
     }
 
     MPI_Finalize();
 
     return 0;
-
 }
