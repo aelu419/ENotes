@@ -1,0 +1,84 @@
+# Introduction
+- (Mike Acton from Insomniac Games)
+- engine team
+  - building the runtime systems that require performance and are not "the game itself" (rendering, animation, etc.)
+  - internal tool dev
+  - concerned with console hardware
+- goals
+  - hard deadlines
+  - soft realtime performance requirements (i.e. framerate)
+  - usability for other departments/teams
+  - performance
+  - maintenance
+  - ease of debugging
+- languages
+  - mostly c++, compiled into asm
+  - other higher level languages for tool development
+- features of c++ used in game dev
+  - exceptions, sandboxing third-party libraries
+  - templates discouraged for performance reasons (especially compile time)
+  - iostream
+  - multiple inheritance
+  - operator overloading: obvious overloading is allowed, complex/non-intuitive are discouraged
+  - no STL: STL's tools do not fit the issues encountered, not that the internal libraries are better than STL on their own ground
+  - custom allocators frequently used to manage sandboxes
+  - custom debugging tools
+# Data-Oriented Design
+- the purpose of programs is to transform data from one form to another
+- data-oriented design principles center around data:
+  - the form/content of data identifies unique problems and the solutions
+  - if you don't understand the cost of solving a problem, you don't understand the problem
+    - hardware knowledge is required to reason about cost
+  - all goals are data-goals, including usability, ease of debuggin, etc.
+  - solve the most common problem first (time-wise)
+  - latency and throughput are onlyu the same for sequential programs
+  - don't throw away data that describe the problem's context, even if it is not essential
+- data-oriented design is a reminder for the above "first principles"
+  - it is a response to the culture around C++
+  - against the views that:
+    - software = platform
+      - hardware is the actual platform
+      - different physical constraints apply for any solution (if the hardware doesn't run the code well, it's the code's fault)
+    - programs should be written to the mental model of the world (OOP)
+      - OOP hides data which is bad for maintenance (sometimes needing change to access) and understanding properties of data itself
+      - world modeling leads to monolithic/unrelated transforms
+      - OOP solve the problem in abstract, which does not directly (on the cost level) relate to actual solutions
+    - code is more important than data
+      - programmers' job is to solve data transformation problems, not writing code
+      - only write code that meaningfully transform data
+      - no future-proof (gives an example about porting a game between platforms)
+  - OOP creates the need for ad-hoc solutions when code behavior does not fit goals
+- *ex.* key value pairs
+  - in OOP: store key-value together
+    - increases cache-cost, a lot of loaded data are ditched
+  - in data-oriented: key array + separately stored values
+    - faster for iteration, etc.
+- what can/can't the compiler do?
+  > the talk lists several instructions and their latencies (in cycles)
+  - memory caching is more costly than instructions (L1, L2, Main RAM, etc.)
+  - L2 cache miss rates is an important figure
+  - *ex.* an in-game script updates the velocity of several in-game object each programmed as a `struct`. the update calls a relatively more expensive operation (square rooting)
+    - in code-centric view, the square root is the problem
+    - in data-centric view, the `sturct` is the problem because bundling data together causes more cache-miss, because only one member of the `struct` is needed while the rest are ditched (while, at the same time, being loaded into cache)
+  - what the compiler optimizes (the instructions) is an order of magnitude smaller than what the programmer optimizes (the data structure)
+- for above reasons, data-oriented design has a more lenient view on premature (or potentially premature) optimizations
+- hardware-level optimizations require the full access to data and their organization, which means no hiding
+
+> the talk elaborate on the Node class of the open source Ogre engine
+
+- encourages code generation
+- know the finite space of data that is being handled
+  - general portability should not be valued
+- analysis of what is actually being run
+  - this explains what is a common problem and what is not, and prioritize optimization concerns
+- optimization do not happen across the entire project, it always starts from "some point" in the project that is discovered through profiling
+- optimization is for a finite set of hardware problems, if not for a single platform (PS3, PS4, etc.)
+- note that it really depends on what kind of resource the project needs
+  - sometimes engineering resource is scarce, so developer experience is more important than performance
+- conflicting view on maintainability
+  - monolithic objects are more organized and understandable
+  - however, functions that deal with monolithic objects tend to have larger input spaces that are harder to comprehend (at least from an optimization perspective)
+- the reason c++ is used instead of c is
+  - people are more familiar with it
+  - better tool support (MSVC, especially)
+  - from the speaker's point of view, cpp features do not provide benefits
