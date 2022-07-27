@@ -10,6 +10,17 @@
   - [Scatter](#scatter)
   - [Reduce](#reduce)
   - [Scan](#scan)
+- [Memory Types](#memory-types)
+  - [Global Memory](#global-memory)
+  - [Constant Memory](#constant-memory)
+  - [Texture Memory](#texture-memory)
+  - [Shared Memory](#shared-memory)
+  - [Registered/Local Memory](#registeredlocal-memory)
+  - [Summary](#summary)
+- [Thread Cooperation](#thread-cooperation)
+- [Events and Streams](#events-and-streams)
+  - [Pinned Memory](#pinned-memory)
+  - [Streams](#streams)
 
 # Architecture & Tools
 - *def.* **shader**: small program on the GPU that runs in a highly parallel manner
@@ -268,3 +279,98 @@
 
   }
   ```
+
+# Memory Types
+## Global Memory
+- Grid scope: avaialble to all threads in all blocks in the grid
+- Application lifetime
+- Dynamic management
+  - `cudaMalloc` to allocate
+  - needs to pass pointer to kernel
+  - `cudaMemcpy` to copy to/from host memory
+  - `cudaFree` to deallocate
+- Static management
+  - declare global variable as `device`
+    *ex.* `__device__ int sum = 0;`
+  - use freely within the kernel
+  - use `cudaMemcpy[To/From]Symbol` to copy to/from host memory
+  - deallocation done automatically
+- slow
+
+## Constant Memory
+- does not change over the course of kernel execution
+  - useful for lookup tables, model parameters, etc.
+- grid scope, application lifetime
+- in device memory, but cached in constant memory cache
+  - constrained by ~64kb `MAX_CONSTANT_MEMORY`
+- similar operation to dstatically-defined device memory
+  - declare as `__constant__`
+  - use freely within the kernel
+  - `cudaMemcpy[To/From]Symbol()`
+- usually used for kernel arguments, very fast
+
+## Texture Memory
+- optimized for 2D access patterns, similar to constant memory
+
+## Shared Memory
+- block scoped: shared only within thread block, but not across the grid
+- kernel lifetime (declare within kernel function body, discarded upon kernel completion)
+- declare like `extern __shared__ int arr;`
+
+## Registered/Local Memory
+- previous memory types are allocated prior to kernel execution
+- memory can be allocated within the kernel
+  - with thread scope, kernel lifetime
+- non-array memory is stored in registered, performs fast
+- array memory is an abstraction that *maps to* global memory, which is slow
+
+## Summary
+- `int foo;` register memory
+- `int foo[10];` local memory, 100x slower
+- `__shard__ int foo;` shared memory
+- `__device__int foo;` global memory, 100x slower
+- `__constant__ int foo;` constant memory, global but cached so no slow down
+
+# Thread Cooperation
+- within the kernel method, call `__syncthreads()` to create breakpoints where all threads of that kernel has to reach before moving on
+- **warp divergence**
+  - all threads within a warp must execute **the same instruction** at same time
+  - this means `if` and `else` cannot run at the same time, leading to performance cuts
+- **atomic operations**
+  - read-modify-write operations can cause race conditions
+  - grid scoped
+  - need to specify shader model version to work
+    - *ex.* `sm_20_atomic_functions.h` is for shader model 2.0
+
+# Events and Streams
+- can be used for performance measurements
+- events are handles `cudaEvent_t`
+  - creation: `cudaEventCreate(&e)`
+  - recording: `cudaEventRecord(e, 0)` where the second argument is the stream id
+  - `cudaEventSynchronize(e)` blocks all instructions until GPU has published the event
+  - `cudaEventDestroy(e)`
+- `cudaEventElapsedTime(&out, eStart, eEnd)`
+
+## Pinned Memory
+- prevent memory from being paged (i.e. swappable to disk)
+  - guarantee that memory remains in the same physical location in the device
+- performance advantage when copying to/from GPU
+- `cudaHostAlloc()` instead of `malloc()`/`new`
+  - `cudaFreeHost()` to deallocate
+- this requires memory to already have enough space, and requires the programmer to deallocate proactively as soon as done, since it interferes with the usual operation of the system
+
+## Streams
+- queue of GPU operations
+  - *ex.* kernel launch, memory copy, ...
+- multiple streams at the same time (task-based parallelism)
+- requires device overlap support
+  - defined in constant `GPU_OVERLAP`
+- `cudaStream_t`
+  - `cudaStreamCreate(&s)`
+  - running kernel with stream id
+   - `kernel<<<blocks, threads, shared, stream>>>`
+  - memory copying to *pinned* memory
+    - `cudaMemcpyAsync()`
+    - no guarantee when operations will happen
+  - stream paramters for things like `cudaEventCreate`
+  
