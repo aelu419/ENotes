@@ -1,0 +1,19 @@
+<html>
+    <body>
+        <div id="app"></div>
+
+        <!-- react core library -->
+        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <!-- react dom -->
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        <!-- babel for jsx (js + html elements) -->
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        
+        <script type="text/jsx">
+        const app = document.getElementById('app');
+
+        // note the direct use of html elements here
+        ReactDOM.render(<h1>Hello React</h1>, app);
+        </script>
+    </body>
+</html>

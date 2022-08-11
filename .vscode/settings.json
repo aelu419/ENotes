@@ -89,4 +89,5 @@
         80
     ],
     "C_Cpp.autocompleteAddParentheses": true,
+    "cmake.configureOnOpen": false,
 }
