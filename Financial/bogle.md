@@ -1,4 +1,0 @@
-
-
-# Investment Habits
-- 
